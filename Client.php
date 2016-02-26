@@ -6,7 +6,6 @@ use Sylius\Component\Core\Model\Order as SyliusOrder;
 use Sylius\Component\Core\Model\Product as SyliusProduct;
 use Webburza\Sylius\GoogleEcommerceBundle\Model\Product;
 use Webburza\Sylius\GoogleEcommerceBundle\Model\Transaction;
-use Zend\Stdlib\JsonSerializable;
 
 /**
  * Class Client.
@@ -57,8 +56,6 @@ class Client
     /**
      * @param SyliusOrder $order
      *
-     * @param             $currency
-     *
      * @return $this
      */
     public function addPurchaseAction(SyliusOrder $order)
@@ -89,7 +86,6 @@ class Client
      * @param array         $options
      *
      * @return $this
-     *
      */
     public function addImpression(SyliusProduct $product, array $options = null)
     {
@@ -211,7 +207,7 @@ class Client
     private function renderBlock(array $collection, $type)
     {
         if (0 === count($collection)) {
-            return null;
+            return;
         }
 
         $blocks = [];
@@ -223,15 +219,15 @@ class Client
     }
 
     /**
-     * @param string                 $action
-     * @param array|JsonSerializable $options
+     * @param string                  $action
+     * @param array|\JsonSerializable $options
      *
-     * @return string
+     * @return null|string
      */
     private function renderAction($action, $options = null)
     {
         if (null === $action) {
-            return null;
+            return;
         }
 
         return sprintf('ga("ec:setAction", %1$s, %2$s);', json_encode($action), json_encode($options));
@@ -246,7 +242,7 @@ class Client
     private function renderVariable($value, $name)
     {
         if (null === $value) {
-            return null;
+            return;
         }
 
         return sprintf('ga("set", %1$s, %2$s);', json_encode($name), json_encode($value));

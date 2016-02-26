@@ -73,7 +73,6 @@ class EcommerceExtension extends \Twig_Extension
         $this->client->addCheckoutAction($order, $options);
     }
 
-
     /**
      * @param SyliusOrder $order
      */
@@ -82,9 +81,8 @@ class EcommerceExtension extends \Twig_Extension
         $this->client->addPurchaseAction($order);
     }
 
-
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
