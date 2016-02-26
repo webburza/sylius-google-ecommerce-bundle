@@ -1,0 +1,93 @@
+<?php
+
+namespace Webburza\Sylius\GoogleEcommerceBundle\Twig\Extension;
+
+use Sylius\Component\Core\Model\Order as SyliusOrder;
+use Sylius\Component\Core\Model\Product as SyliusProduct;
+use Webburza\Sylius\GoogleEcommerceBundle\Client;
+
+/**
+ * Class EcommerceExtension.
+ */
+class EcommerceExtension extends \Twig_Extension
+{
+    /** @var Client */
+    private $client;
+
+    /**
+     * @param Client $client
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFunctions()
+    {
+        return [
+            new \Twig_SimpleFunction('google_ecommerce_render', [$this->client, 'render'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction(
+                'google_ecommerce_click',
+                [$this->client, 'renderClickHandler'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
+                'google_ecommerce_cart',
+                [$this->client, 'renderCartHandler'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction('google_ecommerce_impression', [$this, 'addImpression']),
+            new \Twig_SimpleFunction('google_ecommerce_details', [$this, 'addDetailsImpressionAction']),
+            new \Twig_SimpleFunction('google_ecommerce_checkout', [$this, 'addCheckoutAction']),
+            new \Twig_SimpleFunction('google_ecommerce_purchase', [$this, 'addPurchaseAction']),
+        ];
+    }
+
+    /**
+     * @param SyliusProduct $product
+     * @param string        $list
+     * @param int           $position
+     */
+    public function addImpression(SyliusProduct $product, $list = null, $position = null)
+    {
+        $this->client->addImpression($product, $list, $position);
+    }
+
+    /**
+     * @param SyliusProduct $product
+     */
+    public function addDetailsImpressionAction(SyliusProduct $product)
+    {
+        $this->client->addDetailsImpressionAction($product);
+    }
+
+    /**
+     * @param SyliusOrder $order
+     * @param array       $options
+     */
+    public function addCheckoutAction(SyliusOrder $order, array $options = null)
+    {
+        $this->client->addCheckoutAction($order, $options);
+    }
+
+
+    /**
+     * @param SyliusOrder $order
+     */
+    public function addPurchaseAction(SyliusOrder $order)
+    {
+        $this->client->addPurchaseAction($order);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return 'webburza_sylius_google_ecommerce';
+    }
+}
