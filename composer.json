@@ -7,8 +7,10 @@
     "authors": [
         {
             "name": "Dalibor Karlović",
-            "email": "dkarlovi@burza.hr"
+            "email": "dado@burza.hr"
         }
     ],
-    "minimum-stability": "dev"
+    "autoload": {
+        "psr-4": { "Webburza\\Sylius\\GoogleEcommerceBundle\\": "" }
+    }
 }
