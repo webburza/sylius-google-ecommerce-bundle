@@ -1,0 +1,14 @@
+{
+    "name": "webburza/sylius-google-ecommerce-bundle",
+    "description": "Sylius integration with Google's Enhanced E-Commerce tracking within Google Analytics",
+    "require": {
+        "sylius/sylius": "^0.16.0"
+    },
+    "authors": [
+        {
+            "name": "Dalibor Karlović",
+            "email": "dkarlovi@burza.hr"
+        }
+    ],
+    "minimum-stability": "dev"
+}
