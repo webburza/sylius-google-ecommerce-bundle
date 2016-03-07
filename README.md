@@ -28,12 +28,12 @@ This bundle integrates [Google's Enhanced E-Commerce](https://developers.google.
         
         webburza_sylius_google_ecommerce:
             key: %webburza.sylius.google_ecommerce.key%
-   4. add application-specific bundle parameters (mainly, your Google Analytics key)
+  4. add application-specific bundle parameters (mainly, your Google Analytics key)
 
         # app/config/parameters.yml
         
         webburza.sylius.google_ecommerce.key: UA-12345678-1
-   5. enable GEEC block rendering in your Twig layout
+  5. enable GEEC block rendering in your Twig layout
 
          <!-- app/Resources/SyliusWebBundle/views/Frontend/layout.html.twig -->
          
