@@ -50,22 +50,12 @@ using [Google Analytics Debugger](https://chrome.google.com/webstore/detail/goog
 
 To enable the e-commerce part of the bundle, we need to tell it what the user is doing. We do this by using prepared Twig functions.
 
-There are seven of these functions and we can group them in two distinct groups:
-
-  * **direct action**, user did an action like    
-    * product impression
-    * product details impression
-    * order checkout
-    * order purchase
-  * **action handler**, rendering a Javascript handler which will invoke a direct action like  
-    * click on a product in a certain list of products
-    * add product to cart
-    * remove product from cart
-
 #### Direct action functions
 
+These are direct responses to user doing an action.
+
   * `{{ google_ecommerce_impression(product, {"list": list, "position": loop.index}) }}`  
-    where ever we're displaying a product on any page **except on single product details view for that product**, mark the product impression.  
+    mark a product impression in a listing.  
     Params:
     * `product`, an instance of a Sylius `Product`
     * `list`, a (string) name of the list in which the product is being displayed, ie. `"search results"`
@@ -80,9 +70,36 @@ There are seven of these functions and we can group them in two distinct groups:
     * `order`, an instance of a Sylius `Order`
     * `step`, which step are we currently on? Make sure to [configure the checkout funnel](https://developers.google.com/analytics/devguides/collection/analyticsjs/enhanced-ecommerce#measuring-checkout), as described in the documentation.
   * `{{ google_ecommerce_purchase(order) }}`
-    indicate a successful transaction.
+    indicate a successful transaction.  
     Params:
     * `order`, an instance of a Sylius `Order`
+
+#### Action handler functions
+
+These functions will render a handler which will react to user actions and invoke a direct action.
+
+  * `{{ google_ecommerce_click(product, {"list": list}) }}`  
+    track the click on the product in a listing.  
+    Params:
+    * `product`, an instance of a Sylius `Product`
+    * `list`, a (string) name of the list in which the product is being displayed, ie. `"search results"`
+  * `{{ google_ecommerce_cart(product, {'action': 'add', 'callable': 'function(product) {product[\'variant\'] = \'TODO: which variant?\'; return product;}'}) }}`  
+    adding a product to cart.  
+    Params:
+    * `product`, an instance of a Sylius `Product`
+    * `event`, the Javascript event to react to, defaults to `"submit"`
+    * `action`, always `"add"`
+    * `callable`, an optional Javascript callback which adds additional product information (like variant)
+  * `{{ google_ecommerce_cart(product, {'event': 'click', 'action': 'remove', 'variant': item.vars.value.variant.__toString()}) }}`  
+    removing a product from cart.  
+    Params:
+    * `product`, an instance of a Sylius `Product`
+    * `event`, as we're using a hyperlink, this must be `"click"`
+    * `action`, always `"remove"`
+    * `variant`, as we know what's the product variant at render time, we do not need the JS callback as for the adding.
+  * `google_ecommerce_render()`  
+    render the current GEEC block. This was the function used in [Basic installation](#basic-installation).  
+    Params: none.
 
 ## License
 
