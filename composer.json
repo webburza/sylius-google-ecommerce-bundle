@@ -1,5 +1,6 @@
 {
     "name": "webburza/sylius-google-ecommerce-bundle",
+    "license": "MIT",
     "description": "Sylius integration with Google's Enhanced E-Commerce tracking within Google Analytics",
     "require": {
         "sylius/sylius": "^0.16.0"
