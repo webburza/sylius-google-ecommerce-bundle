@@ -97,7 +97,7 @@ These functions will render a handler which will react to user actions and invok
     * `event`, as we're using a hyperlink, this must be `"click"`
     * `action`, always `"remove"`
     * `variant`, as we know what's the product variant at render time, we do not need the JS callback as for the adding.
-  * `google_ecommerce_render()`  
+  * `{{ google_ecommerce_render() }}`  
     render the current GEEC block. This was the function used in [Basic installation](#basic-installation).  
     Params: none.
 
