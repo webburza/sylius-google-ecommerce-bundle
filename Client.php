@@ -112,18 +112,28 @@ class Client
      */
     public function render()
     {
-        return sprintf(
-            '<script>
+        $blocks = array_filter(
+            [
+                $this->renderBlock($this->impressions, 'Impression'),
+                $this->renderBlock($this->products, 'Product'),
+                $this->renderAction($this->action, $this->actionOptions),
+                $this->renderVariable($this->currency, '&cu'),
+            ]
+        );
+
+        $render = sprintf(
+            '
+        <script>
             (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
                 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
                     })(window,document,"script","//www.google-analytics.com/analytics.js", "ga");
             ga("create", "%1$s", "auto");
-            ga("require", "ec");
-            %2$s
-            %3$s
-            %4$s
-            %5$s
+            ga("require", "ec");',
+            $this->key
+        );
+
+        $render .= '
             ga("send", "pageview");
 
             function wbGoogleEcommerceClick(a){
@@ -148,13 +158,10 @@ class Client
                 ga("send", "event", "UX", "click", a, {hitCallback: c});
                 return false;
             }
-        </script>',
-            $this->key,
-            $this->renderBlock($this->impressions, 'Impression'),
-            $this->renderBlock($this->products, 'Product'),
-            $this->renderAction($this->action, $this->actionOptions),
-            $this->renderVariable($this->currency, '&cu')
-        );
+        </script>
+';
+
+        return $render;
     }
 
     /**
