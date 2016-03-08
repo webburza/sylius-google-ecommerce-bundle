@@ -112,15 +112,6 @@ class Client
      */
     public function render()
     {
-        $blocks = array_filter(
-            [
-                $this->renderBlock($this->impressions, 'Impression'),
-                $this->renderBlock($this->products, 'Product'),
-                $this->renderAction($this->action, $this->actionOptions),
-                $this->renderVariable($this->currency, '&cu'),
-            ]
-        );
-
         $render = sprintf(
             '
         <script>
@@ -132,6 +123,22 @@ class Client
             ga("require", "ec");',
             $this->key
         );
+
+        $blocks = array_filter(
+            [
+                $this->renderBlock($this->impressions, 'Impression'),
+                $this->renderBlock($this->products, 'Product'),
+                $this->renderAction($this->action, $this->actionOptions),
+                $this->renderVariable($this->currency, '&cu'),
+            ]
+        );
+        foreach ($blocks as $block) {
+            $render .= sprintf(
+                '
+            %1$s',
+                $block
+            );
+        }
 
         $render .= '
             ga("send", "pageview");

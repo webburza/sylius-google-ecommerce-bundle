@@ -19,29 +19,59 @@ class ClientTest extends PHPUnitTestCase
         $this->object = new Client('UA-12345678-1');
     }
 
-    public function testCanRender()
+    public function testCanRenderEmptyClient()
     {
-        static::assertEquals($this->fixture('client-render-empty.html'), $this->object->render());
+        static::assertFixtureEquals('client-render-empty.html', $this->object->render());
     }
 
-    private function mockProduct()
+    public function testCanRenderProductImpression()
+    {
+        $product = static::mockProduct('123ABC', 'My Product', 9900);
+
+        $this->object->addImpression($product);
+
+        static::assertFixtureEquals('client-render-impression.html', $this->object->render());
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|SyliusProduct
+     */
+    private function mockProduct($id, $name, $price)
     {
         $product = $this->getMockBuilder(SyliusProduct::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getId'])
+            ->setMethods(['getId', 'getName', 'getPrice'])
             ->getMock();
 
         $product
             ->expects(static::once())
             ->method('getId')
-            ->with('a')
-            ->willReturn('b');
+            ->willReturn($id);
+
+        $product
+            ->expects(static::once())
+            ->method('getName')
+            ->willReturn($name);
 
         return $product;
     }
 
-    private function fixture($name)
+    /**
+     * @param string $fixture
+     * @param string $value
+     */
+    private static function assertFixtureEquals($fixture, $value)
     {
-        return file_get_contents(__DIR__ .'/Resources/fixtures/'. $name);
+        static::assertEquals(static::fixture($fixture), $value);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    private static function fixture($name)
+    {
+        return file_get_contents(__DIR__.'/Resources/fixtures/'.$name);
     }
 }
