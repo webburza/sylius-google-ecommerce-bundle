@@ -73,7 +73,7 @@ class Client
      *
      * @return Client
      */
-    public function addDetailsImpressionAction(SyliusProduct $product)
+    public function addDetailsImpression(SyliusProduct $product)
     {
         $this->addProduct($product);
         $this->action = 'detail';
