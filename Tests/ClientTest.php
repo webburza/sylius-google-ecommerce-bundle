@@ -33,6 +33,15 @@ class ClientTest extends PHPUnitTestCase
         static::assertFixtureEquals('client-render-impression.html', $this->object->render());
     }
 
+    public function testCanRenderProductDetailsImpression()
+    {
+        $product = static::mockProduct('123ABC', 'My Product', 9900);
+
+        $this->object->addDetailsImpression($product);
+
+        static::assertFixtureEquals('client-render-details-impression.html', $this->object->render());
+    }
+
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject|SyliusProduct
      */
@@ -52,6 +61,11 @@ class ClientTest extends PHPUnitTestCase
             ->expects(static::once())
             ->method('getName')
             ->willReturn($name);
+
+        $product
+            ->expects(static::once())
+            ->method('getPrice')
+            ->willReturn($price);
 
         return $product;
     }

@@ -6,7 +6,8 @@
                     })(window,document,"script","//www.google-analytics.com/analytics.js", "ga");
             ga("create", "UA-12345678-1", "auto");
             ga("require", "ec");
-            ga("ec:addImpression", {"id":"123ABC","name":"My Product","price":99});
+            ga("ec:addProduct", {"id":"123ABC","name":"My Product","price":99});
+            ga("ec:setAction", "detail", []);
             ga("send", "pageview");
 
             function wbGoogleEcommerceClick(a){
