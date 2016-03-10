@@ -20,9 +20,12 @@
         }
     ],
     "require": {
-        "sylius/sylius": "^0.16.0"
+        "sylius/core": "^0.16.0"
     },
     "autoload": {
         "psr-4": { "Webburza\\Sylius\\GoogleEcommerceBundle\\": "" }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
     }
 }

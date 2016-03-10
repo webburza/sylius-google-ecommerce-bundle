@@ -1,5 +1,7 @@
 # Sylius & Google Enhanced E-Commerce integration bundle
 
+TODO: Travis build status here
+
 This bundle integrates [Google's Enhanced E-Commerce](https://developers.google.com/analytics/devguides/collection/analyticsjs/enhanced-ecommerce) (GEEC) tracking into [Sylius](http://sylius.org/).
 
 ## Documentation

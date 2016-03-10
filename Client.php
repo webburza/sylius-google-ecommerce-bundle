@@ -73,7 +73,7 @@ class Client
      *
      * @return Client
      */
-    public function addDetailsImpressionAction(SyliusProduct $product)
+    public function addDetailsImpression(SyliusProduct $product)
     {
         $this->addProduct($product);
         $this->action = 'detail';
@@ -95,35 +95,39 @@ class Client
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param array         $options
-     *
-     * @return $this
-     */
-    public function addProduct(SyliusProduct $product, array $options = null)
-    {
-        $this->products[] = Product::createFromProduct($product, $options);
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function render()
     {
-        return sprintf(
-            '<script>
+        $render = sprintf(
+            '
+        <script>
             (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
                 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
                     })(window,document,"script","//www.google-analytics.com/analytics.js", "ga");
             ga("create", "%1$s", "auto");
-            ga("require", "ec");
-            %2$s
-            %3$s
-            %4$s
-            %5$s
+            ga("require", "ec");',
+            $this->key
+        );
+
+        $blocks = array_filter(
+            array_merge(
+                $this->renderBlock($this->impressions, 'Impression'),
+                $this->renderBlock($this->products, 'Product'),
+                $this->renderAction($this->action, $this->actionOptions),
+                $this->renderVariable($this->currency, '&cu')
+            )
+        );
+        foreach ($blocks as $block) {
+            $render .= sprintf(
+                '
+            %1$s',
+                $block
+            );
+        }
+
+        $render .= '
             ga("send", "pageview");
 
             function wbGoogleEcommerceClick(a){
@@ -148,13 +152,10 @@ class Client
                 ga("send", "event", "UX", "click", a, {hitCallback: c});
                 return false;
             }
-        </script>',
-            $this->key,
-            $this->renderBlock($this->impressions, 'Impression'),
-            $this->renderBlock($this->products, 'Product'),
-            $this->renderAction($this->action, $this->actionOptions),
-            $this->renderVariable($this->currency, '&cu')
-        );
+        </script>
+';
+
+        return $render;
     }
 
     /**
@@ -184,7 +185,7 @@ class Client
                 'event' => 'submit',
                 'callable' => 'null',
             ],
-            $options
+            (array) $options
         );
 
         $payload = htmlentities(json_encode(Product::createFromProduct($product, $options)));
@@ -202,50 +203,63 @@ class Client
      * @param array  $collection
      * @param string $type
      *
-     * @return string
+     * @return array
      */
     private function renderBlock(array $collection, $type)
     {
         if (0 === count($collection)) {
-            return;
+            return [];
         }
 
         $blocks = [];
         foreach ($collection as $item) {
-            $blocks[] = sprintf('ga("ec:add%1$s", %2$s)', $type, json_encode($item));
+            $blocks[] = sprintf('ga("ec:add%1$s", %2$s);', $type, json_encode($item));
         }
 
-        return implode("\n", $blocks).';';
+        return $blocks;
     }
 
     /**
      * @param string                  $action
      * @param array|\JsonSerializable $options
      *
-     * @return null|string
+     * @return array
      */
     private function renderAction($action, $options = null)
     {
         if (null === $action) {
-            return;
+            return [];
         }
 
-        return sprintf('ga("ec:setAction", %1$s, %2$s);', json_encode($action), json_encode($options));
+        return [sprintf('ga("ec:setAction", %1$s, %2$s);', json_encode($action), json_encode($options))];
     }
 
     /**
      * @param mixed  $value
      * @param string $name
      *
-     * @return null|string
+     * @return array
      */
     private function renderVariable($value, $name)
     {
         if (null === $value) {
-            return;
+            return [];
         }
 
-        return sprintf('ga("set", %1$s, %2$s);', json_encode($name), json_encode($value));
+        return [sprintf('ga("set", %1$s, %2$s);', json_encode($name), json_encode($value))];
+    }
+
+    /**
+     * @param SyliusProduct $product
+     * @param array         $options
+     *
+     * @return $this
+     */
+    private function addProduct(SyliusProduct $product, array $options = null)
+    {
+        $this->products[] = Product::createFromProduct($product, $options);
+
+        return $this;
     }
 
     /**

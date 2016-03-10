@@ -40,7 +40,7 @@ class EcommerceExtension extends \Twig_Extension
                 ['is_safe' => ['html']]
             ),
             new \Twig_SimpleFunction('google_ecommerce_impression', [$this, 'addImpression']),
-            new \Twig_SimpleFunction('google_ecommerce_details', [$this, 'addDetailsImpressionAction']),
+            new \Twig_SimpleFunction('google_ecommerce_details', [$this, 'addDetailsImpression']),
             new \Twig_SimpleFunction('google_ecommerce_checkout', [$this, 'addCheckoutAction']),
             new \Twig_SimpleFunction('google_ecommerce_purchase', [$this, 'addPurchaseAction']),
         ];
@@ -59,9 +59,9 @@ class EcommerceExtension extends \Twig_Extension
     /**
      * @param SyliusProduct $product
      */
-    public function addDetailsImpressionAction(SyliusProduct $product)
+    public function addDetailsImpression(SyliusProduct $product)
     {
-        $this->client->addDetailsImpressionAction($product);
+        $this->client->addDetailsImpression($product);
     }
 
     /**
