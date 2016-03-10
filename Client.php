@@ -95,19 +95,6 @@ class Client
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param array         $options
-     *
-     * @return $this
-     */
-    public function addProduct(SyliusProduct $product, array $options = null)
-    {
-        $this->products[] = Product::createFromProduct($product, $options);
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function render()
@@ -260,6 +247,19 @@ class Client
         }
 
         return sprintf('ga("set", %1$s, %2$s);', json_encode($name), json_encode($value));
+    }
+
+    /**
+     * @param SyliusProduct $product
+     * @param array         $options
+     *
+     * @return $this
+     */
+    private function addProduct(SyliusProduct $product, array $options = null)
+    {
+        $this->products[] = Product::createFromProduct($product, $options);
+
+        return $this;
     }
 
     /**
