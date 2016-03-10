@@ -93,6 +93,33 @@ class ClientTest extends PHPUnitTestCase
     }
 
     /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addPurchaseAction
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Transaction
+     */
+    public function testCanRenderPurchaseAction()
+    {
+        $order = $this->mockOrder(
+            'TX123',
+            8899,
+            2222,
+            2200,
+            'EUR',
+            [
+                ['ABC123', 'My Product #1', 4455, 'White', 2],
+                ['BCD234', 'My Product #2', 4444, 'Black', 1],
+            ]
+        );
+
+        $this->object->addPurchaseAction($order);
+
+        static::assertFixtureEquals('client-render-purchase.html', $this->object->render());
+    }
+
+    /**
      * @param string $id
      * @param string $name
      * @param float  $price
@@ -179,12 +206,12 @@ class ClientTest extends PHPUnitTestCase
         }
         if (null !== $tax && null !== $shipping) {
             $order
-                ->expects(static::at(0))
+                ->expects(static::at(2))
                 ->method('getAdjustmentsTotal')
                 ->with(static::equalTo(AdjustmentInterface::TAX_ADJUSTMENT))
                 ->willReturn($tax);
             $order
-                ->expects(static::at(1))
+                ->expects(static::at(3))
                 ->method('getAdjustmentsTotal')
                 ->with(static::equalTo(AdjustmentInterface::SHIPPING_ADJUSTMENT))
                 ->willReturn($shipping);

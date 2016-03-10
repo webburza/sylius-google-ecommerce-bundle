@@ -34,7 +34,8 @@ class Transaction implements \JsonSerializable
         $taxAmount = $order->getAdjustmentsTotal(AdjustmentInterface::TAX_ADJUSTMENT) / 100;
         $shippingAmount = $order->getAdjustmentsTotal(AdjustmentInterface::SHIPPING_ADJUSTMENT) / 100;
 
-        $coupon = $order->getPromotionCoupons()->current();
+        // $coupon = $order->getPromotionCoupons()->current();
+        $coupon = null;
         $instance = new self();
         $instance
             ->setId($order->getId())
