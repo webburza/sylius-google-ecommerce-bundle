@@ -31,7 +31,7 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderEmptyClient()
     {
-        static::assertFixtureEquals('client-render-empty.html', $this->object->render());
+        static::assertFixtureEquals('client-action-empty.html', $this->object->render());
     }
 
     /**
@@ -47,7 +47,7 @@ class ClientTest extends PHPUnitTestCase
 
         $this->object->addImpression($product);
 
-        static::assertFixtureEquals('client-render-impression.html', $this->object->render());
+        static::assertFixtureEquals('client-action-impression.html', $this->object->render());
     }
 
     /**
@@ -63,7 +63,7 @@ class ClientTest extends PHPUnitTestCase
 
         $this->object->addDetailsImpression($product);
 
-        static::assertFixtureEquals('client-render-details-impression.html', $this->object->render());
+        static::assertFixtureEquals('client-action-details-impression.html', $this->object->render());
     }
 
     /**
@@ -89,7 +89,7 @@ class ClientTest extends PHPUnitTestCase
 
         $this->object->addCheckoutAction($order, ['step' => 2]);
 
-        static::assertFixtureEquals('client-render-checkout.html', $this->object->render());
+        static::assertFixtureEquals('client-action-checkout.html', $this->object->render());
     }
 
     /**
@@ -116,7 +116,7 @@ class ClientTest extends PHPUnitTestCase
 
         $this->object->addPurchaseAction($order);
 
-        static::assertFixtureEquals('client-render-purchase.html', $this->object->render());
+        static::assertFixtureEquals('client-action-purchase.html', $this->object->render());
     }
 
     /**
