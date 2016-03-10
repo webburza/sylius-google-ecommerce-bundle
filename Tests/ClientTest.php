@@ -19,11 +19,24 @@ class ClientTest extends PHPUnitTestCase
         $this->object = new Client('UA-12345678-1');
     }
 
+    /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
     public function testCanRenderEmptyClient()
     {
         static::assertFixtureEquals('client-render-empty.html', $this->object->render());
     }
 
+    /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addImpression
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
     public function testCanRenderProductImpression()
     {
         $product = static::mockProduct('123ABC', 'My Product', 9900);
@@ -33,6 +46,13 @@ class ClientTest extends PHPUnitTestCase
         static::assertFixtureEquals('client-render-impression.html', $this->object->render());
     }
 
+    /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addDetailsImpression
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
     public function testCanRenderProductDetailsImpression()
     {
         $product = static::mockProduct('123ABC', 'My Product', 9900);
@@ -43,6 +63,10 @@ class ClientTest extends PHPUnitTestCase
     }
 
     /**
+     * @param string $id
+     * @param string $name
+     * @param float  $price
+     *
      * @return \PHPUnit_Framework_MockObject_MockObject|SyliusProduct
      */
     private function mockProduct($id, $name, $price)
