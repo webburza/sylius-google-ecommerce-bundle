@@ -3,7 +3,11 @@
 namespace Webburza\Sylius\GoogleEcommerceBundle\Tests;
 
 use PHPUnit_Framework_TestCase as PHPUnitTestCase;
+use Sylius\Component\Core\Model\AdjustmentInterface;
+use Sylius\Component\Core\Model\Order as SyliusOrder;
+use Sylius\Component\Core\Model\OrderItem as SyliusOrderItem;
 use Sylius\Component\Core\Model\Product as SyliusProduct;
+use Sylius\Component\Core\Model\ProductVariant as SyliusProductVariant;
 use Webburza\Sylius\GoogleEcommerceBundle\Client;
 
 /**
@@ -63,6 +67,32 @@ class ClientTest extends PHPUnitTestCase
     }
 
     /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addCheckoutAction
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
+    public function testCanRenderCheckoutAction()
+    {
+        $order = $this->mockOrder(
+            null,
+            null,
+            null,
+            null,
+            null,
+            [
+                ['ABC123', 'My Product #1', 4455, 'White', 2],
+                ['BCD234', 'My Product #2', 4444, 'Black', 1],
+            ]
+        );
+
+        $this->object->addCheckoutAction($order, ['step' => 2]);
+
+        static::assertFixtureEquals('client-render-checkout.html', $this->object->render());
+    }
+
+    /**
      * @param string $id
      * @param string $name
      * @param float  $price
@@ -75,23 +105,132 @@ class ClientTest extends PHPUnitTestCase
             ->disableOriginalConstructor()
             ->setMethods(['getId', 'getName', 'getPrice'])
             ->getMock();
-
         $product
             ->expects(static::once())
             ->method('getId')
             ->willReturn($id);
-
         $product
             ->expects(static::once())
             ->method('getName')
             ->willReturn($name);
-
         $product
             ->expects(static::once())
             ->method('getPrice')
             ->willReturn($price);
 
         return $product;
+    }
+
+    /**
+     * @param string $id
+     * @param string $name
+     * @param float  $price
+     * @param string $variantName
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|SyliusProductVariant
+     */
+    private function mockVariant($id, $name, $price, $variantName)
+    {
+        $product = $this->mockProduct($id, $name, $price);
+
+        $variant = $this->getMockBuilder(SyliusProductVariant::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getProduct', '__toString'])
+            ->getMock();
+        $variant
+            ->expects(static::once())
+            ->method('getProduct')
+            ->willReturn($product);
+        $variant
+            ->expects(static::once())
+            ->method('__toString')
+            ->willReturn($variantName);
+
+        return $variant;
+    }
+
+    /**
+     * @param string $id
+     * @param float  $total
+     * @param float  $tax
+     * @param float  $shipping
+     * @param string $currency
+     * @param array  $items
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|SyliusOrder
+     */
+    private function mockOrder($id, $total, $tax, $shipping, $currency, array $items)
+    {
+        $order = $this->getMockBuilder(SyliusOrder::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getId', 'getTotal', 'getAdjustmentsTotal', 'getPromotionCoupons', 'getCurrency', 'getItems'])
+            ->getMock();
+        if (null !== $id) {
+            $order
+                ->expects(static::once())
+                ->method('getId')
+                ->willReturn($id);
+        }
+        if (null !== $total) {
+            $order
+                ->expects(static::once())
+                ->method('getTotal')
+                ->willReturn($total);
+        }
+        if (null !== $tax && null !== $shipping) {
+            $order
+                ->expects(static::at(0))
+                ->method('getAdjustmentsTotal')
+                ->with(static::equalTo(AdjustmentInterface::TAX_ADJUSTMENT))
+                ->willReturn($tax);
+            $order
+                ->expects(static::at(1))
+                ->method('getAdjustmentsTotal')
+                ->with(static::equalTo(AdjustmentInterface::SHIPPING_ADJUSTMENT))
+                ->willReturn($shipping);
+        }
+        if (null !== $currency) {
+            $order
+                ->expects(static::once())
+                ->method('getCurrency')
+                ->willReturn($currency);
+        }
+        $order
+            ->expects(static::once())
+            ->method('getItems')
+            ->willReturn($this->mockOrderItems($items));
+
+        return $order;
+    }
+
+    /**
+     * @param array $items
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject[]|SyliusOrderItem[]
+     */
+    private function mockOrderItems(array $items)
+    {
+        $orderItems = [];
+        foreach ($items as $item) {
+            $quantity = array_pop($item); // last item in spec
+            $variant = call_user_func_array([$this, 'mockVariant'], $item);
+
+            $orderItem = $this->getMockBuilder(SyliusOrderItem::class)
+                ->disableOriginalConstructor()
+                ->setMethods(['getQuantity', 'getVariant'])
+                ->getMock();
+            $orderItem
+                ->expects(static::once())
+                ->method('getQuantity')
+                ->willReturn($quantity);
+            $orderItem
+                ->expects(static::once())
+                ->method('getVariant')
+                ->willReturn($variant);
+            $orderItems[] = $orderItem;
+        }
+
+        return $orderItems;
     }
 
     /**

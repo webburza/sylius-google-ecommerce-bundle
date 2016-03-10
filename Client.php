@@ -112,12 +112,12 @@ class Client
         );
 
         $blocks = array_filter(
-            [
+            array_merge(
                 $this->renderBlock($this->impressions, 'Impression'),
                 $this->renderBlock($this->products, 'Product'),
                 $this->renderAction($this->action, $this->actionOptions),
-                $this->renderVariable($this->currency, '&cu'),
-            ]
+                $this->renderVariable($this->currency, '&cu')
+            )
         );
         foreach ($blocks as $block) {
             $render .= sprintf(
@@ -203,50 +203,50 @@ class Client
      * @param array  $collection
      * @param string $type
      *
-     * @return string
+     * @return array
      */
     private function renderBlock(array $collection, $type)
     {
         if (0 === count($collection)) {
-            return;
+            return [];
         }
 
         $blocks = [];
         foreach ($collection as $item) {
-            $blocks[] = sprintf('ga("ec:add%1$s", %2$s)', $type, json_encode($item));
+            $blocks[] = sprintf('ga("ec:add%1$s", %2$s);', $type, json_encode($item));
         }
 
-        return implode("\n", $blocks).';';
+        return $blocks;
     }
 
     /**
      * @param string                  $action
      * @param array|\JsonSerializable $options
      *
-     * @return null|string
+     * @return array
      */
     private function renderAction($action, $options = null)
     {
         if (null === $action) {
-            return;
+            return [];
         }
 
-        return sprintf('ga("ec:setAction", %1$s, %2$s);', json_encode($action), json_encode($options));
+        return [sprintf('ga("ec:setAction", %1$s, %2$s);', json_encode($action), json_encode($options))];
     }
 
     /**
      * @param mixed  $value
      * @param string $name
      *
-     * @return null|string
+     * @return array
      */
     private function renderVariable($value, $name)
     {
         if (null === $value) {
-            return;
+            return [];
         }
 
-        return sprintf('ga("set", %1$s, %2$s);', json_encode($name), json_encode($value));
+        return [sprintf('ga("set", %1$s, %2$s);', json_encode($name), json_encode($value))];
     }
 
     /**
