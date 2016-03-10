@@ -27,6 +27,7 @@ class ClientTest extends PHPUnitTestCase
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     *
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
      */
     public function testCanRenderEmptyClient()
@@ -38,6 +39,7 @@ class ClientTest extends PHPUnitTestCase
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addImpression
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
      */
@@ -54,6 +56,7 @@ class ClientTest extends PHPUnitTestCase
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addDetailsImpression
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
      */
@@ -70,6 +73,7 @@ class ClientTest extends PHPUnitTestCase
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addCheckoutAction
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
      */
@@ -96,6 +100,7 @@ class ClientTest extends PHPUnitTestCase
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addPurchaseAction
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Transaction
@@ -123,6 +128,7 @@ class ClientTest extends PHPUnitTestCase
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::renderClickHandler
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
      * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
      */
