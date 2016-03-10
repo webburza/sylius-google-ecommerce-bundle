@@ -140,6 +140,55 @@ class ClientTest extends PHPUnitTestCase
     }
 
     /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::renderCartHandler
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
+    public function testCanRenderCartAddHandler()
+    {
+        $product = static::mockProduct('123ABC', 'My Product', 9900);
+
+        static::assertFixtureEquals(
+            'client-handler-cart-add.html',
+            $this->object->renderCartHandler(
+                $product,
+                [
+                    'callable' => 'function(p){return p}',
+                ]
+            )
+        );
+    }
+
+
+    /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::renderCartHandler
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
+    public function testCanRenderCartRemoveHandler()
+    {
+        $product = static::mockProduct('123ABC', 'My Product', 9900);
+
+        static::assertFixtureEquals(
+            'client-handler-cart-remove.html',
+            $this->object->renderCartHandler(
+                $product,
+                [
+                    'event' => 'click',
+                    'action' => 'remove',
+                    'variant' => 'Black',
+                ]
+            )
+        );
+    }
+
+    /**
      * @param string $id
      * @param string $name
      * @param float  $price

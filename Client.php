@@ -185,7 +185,7 @@ class Client
                 'event' => 'submit',
                 'callable' => 'null',
             ],
-            $options
+            (array) $options
         );
 
         $payload = htmlentities(json_encode(Product::createFromProduct($product, $options)));
