@@ -21,4 +21,4 @@ install:
 
 script:
     - composer validate
-    - bin/phpunit
+    - vendor/bin/phpunit
