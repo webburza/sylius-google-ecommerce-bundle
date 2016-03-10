@@ -120,6 +120,20 @@ class ClientTest extends PHPUnitTestCase
     }
 
     /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::renderClickHandler
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     */
+    public function testCanRenderClickHandler()
+    {
+        $product = static::mockProduct('123ABC', 'My Product', 9900);
+
+        static::assertFixtureEquals('client-handler-click.html', $this->object->renderClickHandler($product));
+    }
+
+    /**
      * @param string $id
      * @param string $name
      * @param float  $price
