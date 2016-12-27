@@ -23,7 +23,7 @@ class EcommerceExtension extends \Twig_Extension
     }
 
     /**
-     * @return array
+     * @return \Twig_SimpleFunction[]
      */
     public function getFunctions()
     {
@@ -48,12 +48,12 @@ class EcommerceExtension extends \Twig_Extension
 
     /**
      * @param SyliusProduct $product
-     * @param string        $list
-     * @param int           $position
+     * @param null|string   $list
+     * @param null|int      $position
      */
     public function addImpression(SyliusProduct $product, $list = null, $position = null)
     {
-        $this->client->addImpression($product, $list, $position);
+        $this->client->addImpression($product, compact('list', 'position'));
     }
 
     /**
@@ -65,8 +65,8 @@ class EcommerceExtension extends \Twig_Extension
     }
 
     /**
-     * @param SyliusOrder $order
-     * @param array       $options
+     * @param SyliusOrder   $order
+     * @param null|string[] $options
      */
     public function addCheckoutAction(SyliusOrder $order, array $options = null)
     {
