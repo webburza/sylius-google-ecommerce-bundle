@@ -216,6 +216,8 @@ class ClientTest extends PHPUnitTestCase
         return $product;
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
+
     /**
      * @param string $id
      * @param string $name
@@ -244,6 +246,9 @@ class ClientTest extends PHPUnitTestCase
         return $variant;
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
+    /** @noinspection PhpTooManyParametersInspection */
+
     /**
      * @param string $id
      * @param float  $total
@@ -258,7 +263,16 @@ class ClientTest extends PHPUnitTestCase
     {
         $order = $this->getMockBuilder(SyliusOrder::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getId', 'getTotal', 'getAdjustmentsTotal', 'getPromotionCoupons', 'getCurrency', 'getItems'])
+            ->setMethods(
+                [
+                    'getId',
+                    'getTotal',
+                    'getAdjustmentsTotal',
+                    'getPromotionCoupons',
+                    'getCurrencyCode',
+                    'getItems',
+                ]
+            )
             ->getMock();
         if (null !== $id) {
             $order
@@ -287,7 +301,7 @@ class ClientTest extends PHPUnitTestCase
         if (null !== $currency) {
             $order
                 ->expects(static::once())
-                ->method('getCurrency')
+                ->method('getCurrencyCode')
                 ->willReturn($currency);
         }
         $order
@@ -332,7 +346,7 @@ class ClientTest extends PHPUnitTestCase
      * @param string $fixture
      * @param string $value
      */
-    private static function assertFixtureEquals($fixture, $value)
+    protected static function assertFixtureEquals($fixture, $value)
     {
         static::assertSame(static::fixture($fixture), $value);
     }

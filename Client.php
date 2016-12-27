@@ -24,7 +24,7 @@ class Client
     /** @var string */
     private $action;
 
-    /** @var array */
+    /** @var string[] */
     private $actionOptions = [];
 
     /** @var string */
@@ -39,8 +39,8 @@ class Client
     }
 
     /**
-     * @param SyliusOrder $order
-     * @param array       $options
+     * @param SyliusOrder   $order
+     * @param null|string[] $options
      *
      * @return $this
      */
@@ -63,7 +63,7 @@ class Client
         $this->addProductsFromOrder($order);
         $this->action = 'purchase';
         $this->actionOptions = Transaction::createFromOrder($order);
-        $this->currency = $order->getCurrency();
+        $this->currency = $order->getCurrencyCode();
 
         return $this;
     }
@@ -83,7 +83,7 @@ class Client
 
     /**
      * @param SyliusProduct $product
-     * @param array         $options
+     * @param null|string[] $options
      *
      * @return $this
      */
@@ -112,7 +112,7 @@ class Client
             $this->key
         );
 
-        $blocks = array_filter(
+        $blocks = (array) array_filter(
             array_merge(
                 $this->renderBlock($this->impressions, 'Impression'),
                 $this->renderBlock($this->products, 'Product'),
@@ -161,7 +161,7 @@ class Client
 
     /**
      * @param SyliusProduct $product
-     * @param array         $options
+     * @param null|string[] $options
      *
      * @return string
      */
@@ -174,7 +174,7 @@ class Client
 
     /**
      * @param SyliusProduct $product
-     * @param array         $options
+     * @param null|string[] $options
      *
      * @return string
      */
@@ -201,8 +201,8 @@ class Client
     }
 
     /**
-     * @param array  $collection
-     * @param string $type
+     * @param Product[] $collection
+     * @param string    $type
      *
      * @return array
      */
@@ -221,8 +221,8 @@ class Client
     }
 
     /**
-     * @param string                  $action
-     * @param array|\JsonSerializable $options
+     * @param string        $action
+     * @param null|string[] $options
      *
      * @return array
      */
@@ -252,7 +252,7 @@ class Client
 
     /**
      * @param SyliusProduct $product
-     * @param array         $options
+     * @param null|string[] $options
      *
      * @return $this
      */

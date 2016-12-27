@@ -34,7 +34,6 @@ class Transaction implements \JsonSerializable
         $taxAmount = $order->getAdjustmentsTotal(AdjustmentInterface::TAX_ADJUSTMENT) / 100;
         $shippingAmount = $order->getAdjustmentsTotal(AdjustmentInterface::SHIPPING_ADJUSTMENT) / 100;
 
-        // $coupon = $order->getPromotionCoupons()->current();
         $coupon = null;
         $instance = new self();
         $instance
@@ -168,14 +167,7 @@ class Transaction implements \JsonSerializable
     }
 
     /**
-     * Specify data which should be serialized to JSON.
-     *
-     * @see  http://php.net/manual/en/jsonserializable.jsonserialize.php
-     *
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     *               which is a value of any type other than a resource
-     *
-     * @since 5.4.0
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
