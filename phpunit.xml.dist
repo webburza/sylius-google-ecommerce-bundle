@@ -6,7 +6,6 @@
          forceCoversAnnotation="true"
          convertErrorsToExceptions="true"
          convertWarningsToExceptions="true"
-         checkForUnintentionallyCoveredCode="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutChangesToGlobalState="true"
          beStrictAboutOutputDuringTests="true"

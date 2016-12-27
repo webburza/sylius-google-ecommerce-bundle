@@ -99,6 +99,7 @@ class Client
      */
     public function render()
     {
+        /** @noinspection CommaExpressionJS */
         $render = sprintf(
             '
         <script>

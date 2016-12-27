@@ -80,12 +80,4 @@ class EcommerceExtension extends \Twig_Extension
     {
         $this->client->addPurchaseAction($order);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'webburza_sylius_google_ecommerce';
-    }
 }

@@ -67,11 +67,11 @@ These are direct responses to user doing an action.
     Params:
     * `product`, an instance of a Sylius `Product`
   * `{{ google_ecommerce_checkout(order, {'step': 2}) }}`  
-    indicate the progression of a checkout. 
+    indicate the progression of a checkout.  
     Params:
     * `order`, an instance of a Sylius `Order`
     * `step`, which step are we currently on? Make sure to [configure the checkout funnel](https://developers.google.com/analytics/devguides/collection/analyticsjs/enhanced-ecommerce#measuring-checkout), as described in the documentation.
-  * `{{ google_ecommerce_purchase(order) }}`
+  * `{{ google_ecommerce_purchase(order) }}`  
     indicate a successful transaction.  
     Params:
     * `order`, an instance of a Sylius `Order`

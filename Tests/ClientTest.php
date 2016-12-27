@@ -45,7 +45,7 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderProductImpression()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $product = $this->mockProduct('123ABC', 'My Product', 9900);
 
         $this->object->addImpression($product);
 
@@ -62,7 +62,7 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderProductDetailsImpression()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $product = $this->mockProduct('123ABC', 'My Product', 9900);
 
         $this->object->addDetailsImpression($product);
 
@@ -134,7 +134,7 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderClickHandler()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $product = $this->mockProduct('123ABC', 'My Product', 9900);
 
         static::assertFixtureEquals('client-handler-click.html', $this->object->renderClickHandler($product));
     }
@@ -149,7 +149,7 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderCartAddHandler()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $product = $this->mockProduct('123ABC', 'My Product', 9900);
 
         static::assertFixtureEquals(
             'client-handler-cart-add.html',
@@ -162,7 +162,6 @@ class ClientTest extends PHPUnitTestCase
         );
     }
 
-
     /**
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::renderCartHandler
@@ -173,7 +172,7 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderCartRemoveHandler()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $product = $this->mockProduct('123ABC', 'My Product', 9900);
 
         static::assertFixtureEquals(
             'client-handler-cart-remove.html',
@@ -335,7 +334,7 @@ class ClientTest extends PHPUnitTestCase
      */
     private static function assertFixtureEquals($fixture, $value)
     {
-        static::assertEquals(static::fixture($fixture), $value);
+        static::assertSame(static::fixture($fixture), $value);
     }
 
     /**
