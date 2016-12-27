@@ -3,11 +3,13 @@
 namespace Webburza\Sylius\GoogleEcommerceBundle\Tests;
 
 use PHPUnit_Framework_TestCase as PHPUnitTestCase;
-use Sylius\Component\Core\Model\AdjustmentInterface;
-use Sylius\Component\Core\Model\Order as SyliusOrder;
-use Sylius\Component\Core\Model\OrderItem as SyliusOrderItem;
-use Sylius\Component\Core\Model\Product as SyliusProduct;
-use Sylius\Component\Core\Model\ProductVariant as SyliusProductVariant;
+use Sylius\Component\Core\Model\AdjustmentInterface as Adjustment;
+use Sylius\Component\Core\Model\ChannelInterface as Channel;
+use Sylius\Component\Core\Model\ChannelPricingInterface as ChannelPricing;
+use Sylius\Component\Core\Model\OrderInterface as Order;
+use Sylius\Component\Core\Model\OrderItemInterface as OrderItem;
+use Sylius\Component\Core\Model\ProductInterface as Product;
+use Sylius\Component\Core\Model\ProductVariant;
 use Webburza\Sylius\GoogleEcommerceBundle\Client;
 
 /**
@@ -18,9 +20,14 @@ class ClientTest extends PHPUnitTestCase
     /** @var Client */
     private $object;
 
+    /** @var Channel */
+    private $channel;
+
     public function setUp()
     {
-        $this->object = new Client('UA-12345678-1');
+        $this->channel = $this->mockChannel();
+
+        $this->object = new Client($this->channel, 'UA-12345678-1');
     }
 
     /**
@@ -45,9 +52,9 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderProductImpression()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $variant = $this->mockVariant('123ABC', 'My Product', 9900, 'My Product (ABCD)');
 
-        $this->object->addImpression($product);
+        $this->object->addImpression($variant);
 
         static::assertFixtureEquals('client-action-impression.html', $this->object->render());
     }
@@ -62,9 +69,9 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderProductDetailsImpression()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $variant = $this->mockVariant('123ABC', 'My Product', 9900, 'My Product (ABCD)');
 
-        $this->object->addDetailsImpression($product);
+        $this->object->addDetailsImpression($variant);
 
         static::assertFixtureEquals('client-action-details-impression.html', $this->object->render());
     }
@@ -134,9 +141,9 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderClickHandler()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $variant = $this->mockVariant('123ABC', 'My Product', 9900, 'My Product (ABCD)');
 
-        static::assertFixtureEquals('client-handler-click.html', $this->object->renderClickHandler($product));
+        static::assertFixtureEquals('client-handler-click.html', $this->object->renderClickHandler($variant));
     }
 
     /**
@@ -149,19 +156,18 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderCartAddHandler()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $variant = $this->mockVariant('123ABC', 'My Product', 9900, 'My Product (ABCD)');
 
         static::assertFixtureEquals(
             'client-handler-cart-add.html',
             $this->object->renderCartHandler(
-                $product,
+                $variant,
                 [
                     'callable' => 'function(p){return p}',
                 ]
             )
         );
     }
-
 
     /**
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
@@ -173,12 +179,12 @@ class ClientTest extends PHPUnitTestCase
      */
     public function testCanRenderCartRemoveHandler()
     {
-        $product = static::mockProduct('123ABC', 'My Product', 9900);
+        $variant = $this->mockVariant('123ABC', 'My Product', 9900, 'My Product (ABCD)');
 
         static::assertFixtureEquals(
             'client-handler-cart-remove.html',
             $this->object->renderCartHandler(
-                $product,
+                $variant,
                 [
                     'event' => 'click',
                     'action' => 'remove',
@@ -189,17 +195,46 @@ class ClientTest extends PHPUnitTestCase
     }
 
     /**
+     * @return Channel
+     */
+    private function mockChannel()
+    {
+        /** @var \PHPUnit_Framework_MockObject_MockObject|Channel $channel */
+        /** @noinspection OneTimeUseVariablesInspection */
+        $channel = $this->getMockBuilder(Channel::class)
+            ->getMock();
+
+        return $channel;
+    }
+
+    /**
+     * @param float $price
+     *
+     * @return ChannelPricing
+     */
+    private function mockChannelPricing($price)
+    {
+        /** @var \PHPUnit_Framework_MockObject_MockObject|ChannelPricing $pricing */
+        $pricing = $this->getMockBuilder(ChannelPricing::class)
+            ->getMock();
+        $pricing
+            ->expects(static::once())
+            ->method('getPrice')
+            ->willReturn($price);
+
+        return $pricing;
+    }
+
+    /**
      * @param string $id
      * @param string $name
-     * @param float  $price
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|SyliusProduct
+     * @return Product
      */
-    private function mockProduct($id, $name, $price)
+    private function mockProduct($id, $name)
     {
-        $product = $this->getMockBuilder(SyliusProduct::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getId', 'getName', 'getPrice'])
+        /** @var \PHPUnit_Framework_MockObject_MockObject|Product $product */
+        $product = $this->getMockBuilder(Product::class)
             ->getMock();
         $product
             ->expects(static::once())
@@ -209,13 +244,11 @@ class ClientTest extends PHPUnitTestCase
             ->expects(static::once())
             ->method('getName')
             ->willReturn($name);
-        $product
-            ->expects(static::once())
-            ->method('getPrice')
-            ->willReturn($price);
 
         return $product;
     }
+
+    /** @noinspection MoreThanThreeArgumentsInspection */
 
     /**
      * @param string $id
@@ -223,15 +256,16 @@ class ClientTest extends PHPUnitTestCase
      * @param float  $price
      * @param string $variantName
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|SyliusProductVariant
+     * @return ProductVariant
      */
     private function mockVariant($id, $name, $price, $variantName)
     {
-        $product = $this->mockProduct($id, $name, $price);
+        $product = $this->mockProduct($id, $name);
+        $pricing = $this->mockChannelPricing($price);
 
-        $variant = $this->getMockBuilder(SyliusProductVariant::class)
+        /** @var \PHPUnit_Framework_MockObject_MockObject|ProductVariant $variant */
+        $variant = $this->getMockBuilder(ProductVariant::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProduct', '__toString'])
             ->getMock();
         $variant
             ->expects(static::once())
@@ -239,11 +273,19 @@ class ClientTest extends PHPUnitTestCase
             ->willReturn($product);
         $variant
             ->expects(static::once())
+            ->method('getChannelPricingForChannel')
+            ->with($this->channel)
+            ->willReturn($pricing);
+        $variant
+            ->expects(static::any())
             ->method('__toString')
             ->willReturn($variantName);
 
         return $variant;
     }
+
+    /** @noinspection MoreThanThreeArgumentsInspection */
+    /** @noinspection PhpTooManyParametersInspection */
 
     /**
      * @param string $id
@@ -253,13 +295,12 @@ class ClientTest extends PHPUnitTestCase
      * @param string $currency
      * @param array  $items
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|SyliusOrder
+     * @return Order
      */
     private function mockOrder($id, $total, $tax, $shipping, $currency, array $items)
     {
-        $order = $this->getMockBuilder(SyliusOrder::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getId', 'getTotal', 'getAdjustmentsTotal', 'getPromotionCoupons', 'getCurrency', 'getItems'])
+        /** @var \PHPUnit_Framework_MockObject_MockObject|Order $order */
+        $order = $this->getMockBuilder(Order::class)
             ->getMock();
         if (null !== $id) {
             $order
@@ -277,18 +318,18 @@ class ClientTest extends PHPUnitTestCase
             $order
                 ->expects(static::at(2))
                 ->method('getAdjustmentsTotal')
-                ->with(static::equalTo(AdjustmentInterface::TAX_ADJUSTMENT))
+                ->with(static::equalTo(Adjustment::TAX_ADJUSTMENT))
                 ->willReturn($tax);
             $order
                 ->expects(static::at(3))
                 ->method('getAdjustmentsTotal')
-                ->with(static::equalTo(AdjustmentInterface::SHIPPING_ADJUSTMENT))
+                ->with(static::equalTo(Adjustment::SHIPPING_ADJUSTMENT))
                 ->willReturn($shipping);
         }
         if (null !== $currency) {
             $order
                 ->expects(static::once())
-                ->method('getCurrency')
+                ->method('getCurrencyCode')
                 ->willReturn($currency);
         }
         $order
@@ -302,18 +343,17 @@ class ClientTest extends PHPUnitTestCase
     /**
      * @param array $items
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject[]|SyliusOrderItem[]
+     * @return OrderItem[]
      */
     private function mockOrderItems(array $items)
     {
+        /** @var \PHPUnit_Framework_MockObject_MockObject[]|OrderItem[] $orderItems */
         $orderItems = [];
         foreach ($items as $item) {
             $quantity = array_pop($item); // last item in spec
             $variant = call_user_func_array([$this, 'mockVariant'], $item);
 
-            $orderItem = $this->getMockBuilder(SyliusOrderItem::class)
-                ->disableOriginalConstructor()
-                ->setMethods(['getQuantity', 'getVariant'])
+            $orderItem = $this->getMockBuilder(OrderItem::class)
                 ->getMock();
             $orderItem
                 ->expects(static::once())
@@ -333,9 +373,9 @@ class ClientTest extends PHPUnitTestCase
      * @param string $fixture
      * @param string $value
      */
-    private static function assertFixtureEquals($fixture, $value)
+    protected static function assertFixtureEquals($fixture, $value)
     {
-        static::assertEquals(static::fixture($fixture), $value);
+        static::assertSame(static::fixture($fixture), $value);
     }
 
     /**
@@ -343,7 +383,7 @@ class ClientTest extends PHPUnitTestCase
      *
      * @return string
      */
-    private static function fixture($name)
+    protected static function fixture($name)
     {
         return file_get_contents(__DIR__.'/Resources/fixtures/'.$name);
     }
