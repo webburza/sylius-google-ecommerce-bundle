@@ -10,6 +10,7 @@
          beStrictAboutChangesToGlobalState="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestSize="true"
+         checkForUnintentionallyCoveredCode="true"
          bootstrap="Tests/bootstrap.php">
 
     <testsuites>

@@ -2,7 +2,8 @@
 
 namespace Webburza\Sylius\GoogleEcommerceBundle\Model;
 
-use Sylius\Component\Core\Model\Product as SyliusProduct;
+use Sylius\Component\Core\Model\ChannelInterface as Channel;
+use Sylius\Component\Core\Model\ProductVariantInterface as ProductVariant;
 
 /**
  * Class Impression.
@@ -29,12 +30,13 @@ class Product implements \JsonSerializable
     private $quantity;
 
     /**
-     * @param SyliusProduct $product
-     * @param string[]      $options
+     * @param Channel        $channel
+     * @param ProductVariant $variant
+     * @param null|string[]  $options
      *
      * @return Product
      */
-    public static function createFromProduct(SyliusProduct $product, array $options = null)
+    public static function createFromProductVariant(Channel $channel, ProductVariant $variant, array $options = null)
     {
         $options = array_merge(
             [
@@ -46,7 +48,9 @@ class Product implements \JsonSerializable
             (array) $options
         );
 
-        $price = ($product->getPrice() / 100);
+        $channelPricing = $variant->getChannelPricingForChannel($channel);
+        $price = ($channelPricing->getPrice() / 100);
+        $product = $variant->getProduct();
 
         $instance = new self();
         $instance

@@ -2,8 +2,8 @@
 
 namespace Webburza\Sylius\GoogleEcommerceBundle\Model;
 
-use Sylius\Component\Core\Model\Order as SyliusOrder;
-use Sylius\Component\Core\Model\AdjustmentInterface;
+use Sylius\Component\Core\Model\OrderInterface as Order;
+use Sylius\Component\Core\Model\AdjustmentInterface as Adjustment;
 
 /**
  * Class Transaction.
@@ -24,16 +24,18 @@ class Transaction implements \JsonSerializable
     private $coupon;
 
     /**
-     * @param SyliusOrder $order
+     * @param Order $order
      *
      * @return Transaction
      */
-    public static function createFromOrder(SyliusOrder $order)
+    public static function createFromOrder(Order $order)
     {
+        // TODO: should extract this from payment, not guess like this
         $totalAmount = $order->getTotal() / 100;
-        $taxAmount = $order->getAdjustmentsTotal(AdjustmentInterface::TAX_ADJUSTMENT) / 100;
-        $shippingAmount = $order->getAdjustmentsTotal(AdjustmentInterface::SHIPPING_ADJUSTMENT) / 100;
+        $taxAmount = $order->getAdjustmentsTotal(Adjustment::TAX_ADJUSTMENT) / 100;
+        $shippingAmount = $order->getAdjustmentsTotal(Adjustment::SHIPPING_ADJUSTMENT) / 100;
 
+        // TODO: complete coupon handling
         $coupon = null;
         $instance = new self();
         $instance

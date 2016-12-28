@@ -2,23 +2,28 @@
 
 namespace Webburza\Sylius\GoogleEcommerceBundle;
 
-use Sylius\Component\Core\Model\Order as SyliusOrder;
-use Sylius\Component\Core\Model\Product as SyliusProduct;
-use Webburza\Sylius\GoogleEcommerceBundle\Model\Product;
-use Webburza\Sylius\GoogleEcommerceBundle\Model\Transaction;
+use Sylius\Component\Core\Model\ChannelInterface as Channel;
+use Sylius\Component\Core\Model\OrderInterface as Order;
+use Sylius\Component\Core\Model\ProductInterface as Product;
+use Sylius\Component\Core\Model\ProductVariantInterface as ProductVariant;
+use Webburza\Sylius\GoogleEcommerceBundle\Model\Product as ProductModel;
+use Webburza\Sylius\GoogleEcommerceBundle\Model\Transaction as TransactionModel;
 
 /**
  * Class Client.
  */
 class Client
 {
+    /** @var Channel */
+    private $channel;
+
     /** @var string */
     private $key;
 
-    /** @var Product[] */
+    /** @var ProductModel[] */
     private $impressions = [];
 
-    /** @var Product[] */
+    /** @var ProductModel[] */
     private $products = [];
 
     /** @var string */
@@ -31,65 +36,67 @@ class Client
     private $currency;
 
     /**
-     * @param string $key
+     * @param Channel $channel
+     * @param string  $key
      */
-    public function __construct($key)
+    public function __construct(Channel $channel, $key)
     {
+        $this->channel = $channel;
         $this->key = $key;
     }
 
     /**
-     * @param SyliusOrder   $order
+     * @param Order         $order
      * @param null|string[] $options
      *
      * @return $this
      */
-    public function addCheckoutAction(SyliusOrder $order, array $options = null)
+    public function addCheckoutAction(Order $order, array $options = null)
     {
         $this->addProductsFromOrder($order);
         $this->action = 'checkout';
-        $this->actionOptions = $options;
+        $this->actionOptions = (array) $options;
 
         return $this;
     }
 
     /**
-     * @param SyliusOrder $order
+     * @param Order $order
      *
      * @return $this
      */
-    public function addPurchaseAction(SyliusOrder $order)
+    public function addPurchaseAction(Order $order)
     {
         $this->addProductsFromOrder($order);
         $this->action = 'purchase';
-        $this->actionOptions = Transaction::createFromOrder($order);
+        $this->actionOptions = TransactionModel::createFromOrder($order)->jsonSerialize();
         $this->currency = $order->getCurrencyCode();
 
         return $this;
     }
 
     /**
-     * @param SyliusProduct $product
+     * @param ProductVariant $variant
      *
      * @return Client
      */
-    public function addDetailsImpression(SyliusProduct $product)
+    public function addDetailsImpression(ProductVariant $variant)
     {
-        $this->addProduct($product);
+        $this->addProductVariant($variant);
         $this->action = 'detail';
 
         return $this;
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param null|string[] $options
+     * @param ProductVariant $variant
+     * @param null|string[]  $options
      *
      * @return $this
      */
-    public function addImpression(SyliusProduct $product, array $options = null)
+    public function addImpression(ProductVariant $variant, array $options = null)
     {
-        $this->impressions[] = Product::createFromProduct($product, $options);
+        $this->impressions[] = ProductModel::createFromProductVariant($this->channel, $variant, $options);
 
         return $this;
     }
@@ -160,25 +167,27 @@ class Client
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param null|string[] $options
+     * @param ProductVariant $variant
+     * @param null|string[]  $options
      *
      * @return string
      */
-    public function renderClickHandler(SyliusProduct $product, array $options = null)
+    public function renderClickHandler(ProductVariant $variant, array $options = null)
     {
-        $payload = htmlentities(json_encode(Product::createFromProduct($product, $options)));
+        $payload = htmlentities(
+            json_encode(ProductModel::createFromProductVariant($this->channel, $variant, $options))
+        );
 
         return sprintf(' data-geec="%1$s" onclick="wbGoogleEcommerceClick(this); return !ga.loaded;"', $payload);
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param null|string[] $options
+     * @param ProductVariant $variant
+     * @param null|string[]  $options
      *
      * @return string
      */
-    public function renderCartHandler(SyliusProduct $product, array $options = null)
+    public function renderCartHandler(ProductVariant $variant, array $options = null)
     {
         $options = array_merge(
             [
@@ -189,7 +198,9 @@ class Client
             (array) $options
         );
 
-        $payload = htmlentities(json_encode(Product::createFromProduct($product, $options)));
+        $payload = htmlentities(
+            json_encode(ProductModel::createFromProductVariant($this->channel, $variant, $options))
+        );
 
         return sprintf(
             ' data-geec="%1$s" on%2$s="return wbGoogleEcommerceCart(\'%3$s\', this, %4$s);"',
@@ -251,31 +262,28 @@ class Client
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param null|string[] $options
+     * @param ProductVariant $variant
+     * @param null|string[]  $options
      *
      * @return $this
      */
-    private function addProduct(SyliusProduct $product, array $options = null)
+    private function addProductVariant(ProductVariant $variant, array $options = null)
     {
-        $this->products[] = Product::createFromProduct($product, $options);
+        $this->products[] = ProductModel::createFromProductVariant($this->channel, $variant, $options);
 
         return $this;
     }
 
     /**
-     * @param SyliusOrder $order
+     * @param Order $order
      */
-    private function addProductsFromOrder(SyliusOrder $order)
+    private function addProductsFromOrder(Order $order)
     {
-        /** @var \Sylius\Component\Core\Model\OrderItem $item */
         foreach ($order->getItems() as $item) {
             /** @var \Sylius\Component\Core\Model\ProductVariant $variant */
             $variant = $item->getVariant();
-            /** @var \Sylius\Component\Core\Model\Product $product */
-            $product = $variant->getProduct();
-            $this->addProduct(
-                $product,
+            $this->addProductVariant(
+                $variant,
                 [
                     'variant' => $variant->__toString(),
                     'quantity' => $item->getQuantity(),

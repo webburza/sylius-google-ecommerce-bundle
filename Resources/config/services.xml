@@ -7,9 +7,10 @@
     <parameters>
         <parameter key="webburza.sylius.google_ecommerce.key"/>
     </parameters>
-    
+
     <services>
         <service id="webburza.sylius.google_ecommerce.client" class="Webburza\Sylius\GoogleEcommerceBundle\Client" public="true">
+            <argument type="service" id="sylius.context.channel"/>
             <argument>%webburza.sylius.google_ecommerce.key%</argument>
         </service>
 
