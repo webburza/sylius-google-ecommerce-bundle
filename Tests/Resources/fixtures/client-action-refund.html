@@ -1,0 +1,37 @@
+
+        <script>
+            (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                    })(window,document,"script","//www.google-analytics.com/analytics.js", "ga");
+            ga("create", "UA-12345678-1", "auto");
+            ga("require", "ec");
+            ga("ec:addProduct", {"id":"ABC123","name":"My Product #1","variant":"White","price":44.55,"quantity":2});
+            ga("ec:addProduct", {"id":"BCD234","name":"My Product #2","variant":"Black","price":44.44,"quantity":1});
+            ga("ec:setAction", "refund", {"id":"TX123","revenue":88.99,"tax":22.22,"shipping":22});
+            ga("set", "&cu", "EUR");
+            ga("send", "pageview");
+
+            function wbGoogleEcommerceClick(a){
+                var p = JSON.parse(a.dataset.geec);
+                ga("ec:addProduct", p);
+                ga("ec:setAction", "click", {list: p.list});
+                ga("send", "event", "UX", "click", "Results", {hitCallback: function() {document.location = a.href}});
+                return false;
+            }
+
+            function wbGoogleEcommerceCart(a,el,f){
+                if (!(el&&window.ga&&ga.loaded)) return true;
+                var c, p = JSON.parse(el.dataset.geec);
+                if (f && typeof f === "function") p = f(p);
+                ga("ec:addProduct", p);
+                ga("ec:setAction", a);
+                switch (el.nodeName.toLowerCase()) {
+                    case "a": c = function() {document.location = el.href}; break;
+                    case "form": c = function() {el.submit()}; break;
+                    default: throw Error("Unsupported GEEC invocation");
+                }
+                ga("send", "event", "UX", "click", a, {hitCallback: c});
+                return false;
+            }
+        </script>

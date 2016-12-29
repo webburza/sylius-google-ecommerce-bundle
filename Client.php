@@ -67,12 +67,17 @@ class Client
      */
     public function addPurchaseAction(Order $order)
     {
-        $this->addProductsFromOrder($order);
-        $this->action = 'purchase';
-        $this->actionOptions = TransactionModel::createFromOrder($order)->jsonSerialize();
-        $this->currency = $order->getCurrencyCode();
+        return $this->addTransactionAction($order, 'purchase');
+    }
 
-        return $this;
+    /**
+     * @param Order $order
+     *
+     * @return $this
+     */
+    public function addRefundAction(Order $order)
+    {
+        return $this->addTransactionAction($order, 'refund');
     }
 
     /**
@@ -290,5 +295,21 @@ class Client
                 ]
             );
         }
+    }
+
+    /**
+     * @param Order  $order
+     * @param string $action
+     *
+     * @return $this
+     */
+    private function addTransactionAction(Order $order, $action)
+    {
+        $this->addProductsFromOrder($order);
+        $this->action = $action;
+        $this->actionOptions = TransactionModel::createFromOrder($order)->jsonSerialize();
+        $this->currency = $order->getCurrencyCode();
+
+        return $this;
     }
 }
