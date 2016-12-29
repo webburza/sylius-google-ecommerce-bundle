@@ -2,8 +2,8 @@
 
 namespace Webburza\Sylius\GoogleEcommerceBundle\Twig\Extension;
 
-use Sylius\Component\Core\Model\Order as SyliusOrder;
-use Sylius\Component\Core\Model\Product as SyliusProduct;
+use Sylius\Component\Core\Model\OrderInterface as Order;
+use Sylius\Component\Core\Model\ProductVariantInterface as ProductVariant;
 use Webburza\Sylius\GoogleEcommerceBundle\Client;
 
 /**
@@ -23,7 +23,7 @@ class EcommerceExtension extends \Twig_Extension
     }
 
     /**
-     * @return array
+     * @return \Twig_SimpleFunction[]
      */
     public function getFunctions()
     {
@@ -47,45 +47,37 @@ class EcommerceExtension extends \Twig_Extension
     }
 
     /**
-     * @param SyliusProduct $product
-     * @param string        $list
-     * @param int           $position
+     * @param ProductVariant $variant
+     * @param null|string    $list
+     * @param null|int       $position
      */
-    public function addImpression(SyliusProduct $product, $list = null, $position = null)
+    public function addImpression(ProductVariant $variant, $list = null, $position = null)
     {
-        $this->client->addImpression($product, $list, $position);
+        $this->client->addImpression($variant, compact('list', 'position'));
     }
 
     /**
-     * @param SyliusProduct $product
+     * @param ProductVariant $variant
      */
-    public function addDetailsImpression(SyliusProduct $product)
+    public function addDetailsImpression(ProductVariant $variant)
     {
-        $this->client->addDetailsImpression($product);
+        $this->client->addDetailsImpression($variant);
     }
 
     /**
-     * @param SyliusOrder $order
-     * @param array       $options
+     * @param Order         $order
+     * @param null|string[] $options
      */
-    public function addCheckoutAction(SyliusOrder $order, array $options = null)
+    public function addCheckoutAction(Order $order, array $options = null)
     {
         $this->client->addCheckoutAction($order, $options);
     }
 
     /**
-     * @param SyliusOrder $order
+     * @param Order $order
      */
-    public function addPurchaseAction(SyliusOrder $order)
+    public function addPurchaseAction(Order $order)
     {
         $this->client->addPurchaseAction($order);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'webburza_sylius_google_ecommerce';
     }
 }

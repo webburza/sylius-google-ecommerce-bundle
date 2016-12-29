@@ -1,0 +1,29 @@
+# Default
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.gif binary
+*.jpg binary
+*.db binary
+*.jar binary
+*.ico binary
+.gitkeep binary
+*.pdf binary
+*.zip binary
+
+# Fonts
+*.eot binary
+*.otf binary
+*.svg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+
+# Media
+*.mp4 binary
+
+# Translations
+*.po binary
+*.mo binary
+*.pot binary
