@@ -133,6 +133,34 @@ class ClientTest extends PHPUnitTestCase
 
     /**
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::addRefundAction
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
+     *
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Client::__construct
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Product
+     * @uses   \Webburza\Sylius\GoogleEcommerceBundle\Model\Transaction
+     */
+    public function testCanRenderRefundAction()
+    {
+        $order = $this->mockOrder(
+            'TX123',
+            8899,
+            2222,
+            2200,
+            'EUR',
+            [
+                ['ABC123', 'My Product #1', 4455, 'White', 2],
+                ['BCD234', 'My Product #2', 4444, 'Black', 1],
+            ]
+        );
+
+        $this->object->addRefundAction($order);
+
+        static::assertFixtureEquals('client-action-refund.html', $this->object->render());
+    }
+
+    /**
+     * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::render
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::renderClickHandler
      * @covers \Webburza\Sylius\GoogleEcommerceBundle\Client::<private>
      *
