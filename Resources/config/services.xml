@@ -10,12 +10,12 @@
 
     <services>
         <service id="webburza.sylius.google_ecommerce.client" class="Webburza\Sylius\GoogleEcommerceBundle\Client" public="true">
-            <argument type="service" id="sylius.context.channel"/>
+            <argument type="expression">service('sylius.context.channel').getChannel()</argument>
             <argument>%webburza.sylius.google_ecommerce.key%</argument>
         </service>
 
         <service id="webburza.sylius.google_ecommerce.twig.ecommerce_extension" class="Webburza\Sylius\GoogleEcommerceBundle\Twig\Extension\EcommerceExtension" public="false">
-            <argument type="expression">service('sylius.context.channel').getChannel()</argument>
+            <argument type="service" id="webburza.sylius.google_ecommerce.client"/>
             <tag name="twig.extension" />
         </service>
     </services>
